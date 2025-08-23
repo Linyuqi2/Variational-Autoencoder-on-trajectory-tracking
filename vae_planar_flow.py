@@ -93,7 +93,7 @@ def build_dataset(n_traj=1000, T=50, dt=0.1):
         )
         # xs: (T,5), zs: (T,2)
 
-        # shape (T,2)
+          # shape (T,2)
         meas_list.append(zs)
         true_list.append(xs)       # 真值 x_0…x_{T-1}
     # 转成 float32 tensor
@@ -140,18 +140,18 @@ class CTRVDataset(Dataset):
         return x_seq, z_seq
 
 def compute_structured_loss(
-        x_pred,    # (B,5)
-        x_true,    # (B,5)
-        x_prev,    # (B,5)
-        z_k,       # (B,2)         # (5,5)  torch.Tensor
-        C,         # (2,5)  torch.Tensor
-        Q,         # (5,5)  torch.Tensor
-        R,         # (2,2)  torch.Tensor
-        dt = 0.1,
-        sigma_a=np.sqrt(0.01),
-        sigma_alpha=np.sqrt(0.001),
-        lambda_dyn=1.0,
-        lambda_obs=1.0
+    x_pred,    # (B,5)
+    x_true,    # (B,5)
+    x_prev,    # (B,5)
+    z_k,       # (B,2)         # (5,5)  torch.Tensor
+    C,         # (2,5)  torch.Tensor
+    Q,         # (5,5)  torch.Tensor
+    R,         # (2,2)  torch.Tensor
+    dt = 0.1,
+    sigma_a=np.sqrt(0.01),
+    sigma_alpha=np.sqrt(0.001),
+    lambda_dyn=1.0,
+    lambda_obs=1.0
 ):
     """
     1) ||x_pred - x_true||^2
@@ -261,7 +261,7 @@ class StepVAE(nn.Module):
 
         x_pred = self.dec(z)                      # (B, state_dim)
         #if torch.any(torch.isnan(x_pred)) or torch.any(torch.abs(x_pred) > 1e4):
-        #print(f"Exploding prediction at step {k}: {x_pred}")
+            #print(f"Exploding prediction at step {k}: {x_pred}")
         return x_pred, mu, logv, sum_log_det
 
 # --- 3. Training ---
@@ -321,7 +321,7 @@ def train_step_vae(
 
                     x_pred, mu, logv, sum_log_det = model(prev_x, z_k)
                     # 重构 + KL
-                    # 例如 从 0 → 1.0 线性/余弦
+                     # 例如 从 0 → 1.0 线性/余弦
                     kl_dim = -0.5 * (1 + logv - mu.pow(2) - logv.exp())
                     kl_dim = torch.clamp(kl_dim, min=0.5)  # free-bits, 可先不开再逐步开
                     kl = kl_dim.mean() - torch.mean(sum_log_det)
@@ -358,7 +358,7 @@ def train_step_vae(
                     total_loss += loss.item()
                     total_loss_batch += loss.item()
                     steps += 1
-
+                
                 print(f"Batch:{b}, Avg loss: {total_loss_batch / (T - 1) / (b+1)}")
 
         print(f">>> Epoch {ep} finished. Avg loss: {total_loss / (T - 1)/B:.6f}")
@@ -442,7 +442,7 @@ if __name__ == "__main__":
 
     # 只取位置 (x, y) 两维作图
     plt.figure(figsize=(6, 6))
-    plt.plot(true_vals[:, 0], true_vals[:, 1],'--', label='True')
+    plt.plot(true_vals[:, 0], true_vals[:, 1], label='True')
     plt.plot(preds[:, 0], preds[:, 1], '--', label='Pred')
     plt.xlabel('x');
     plt.ylabel('y');
